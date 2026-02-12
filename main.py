@@ -24,3 +24,27 @@ def kontrol_et():
 
 if __name__ == "__main__":
     kontrol_et()
+
+
+def kontrol_et():
+    url = "https://www.shopier.com/brickmentor/41538003" # Takip linkin
+    hedef_fiyat = 299 # Hedeflediğin fiyat
+    headers = {"User-Agent": "Mozilla/5.0"}
+    
+    res = requests.get(url, headers=headers)
+    soup = BeautifulSoup(res.content, "html.parser")
+    
+    try:
+        fiyat_metni = soup.find("span", {"class": "a-price-whole"}).text
+        guncel_fiyat = int(fiyat_metni.replace(".", "").replace(",", ""))
+        
+        if guncel_fiyat <= hedef_fiyat:
+            token = os.getenv("TELEGRAM_TOKEN")
+            chat_id = os.getenv("CHAT_ID")
+            mesaj = f"LEGO İNDİRİMİ! Fiyat: {guncel_fiyat} TL. Link: {url}"
+            requests.get(f"https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text={mesaj}")
+    except:
+        print("Hata oluştu.")
+
+if __name__ == "__main__":
+    kontrol_et()
